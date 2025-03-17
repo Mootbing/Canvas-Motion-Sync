@@ -1,14 +1,33 @@
-from src import iCalGrabber, MotionHandler
+from src import iCalGrabber, MotionBridge
 import time
 import datetime
 
 grabber = iCalGrabber.iCalGrabber()
-motion = MotionHandler.MotionHandler()
+motion = MotionBridge.MotionBridge()
 
 if (grabber.load_calendar()):
     events = grabber.get_events()
+    already_existing_events = motion.get_tasks()
     
     for event in events:
+
+        if (event.summary in [task['name'] for task in already_existing_events]):
+            print(f"Task for event already exists")
+
+            existing = already_existing_events[[task['name'] for task in already_existing_events].index(event.summary)]
+
+            parsed_due_date = datetime.datetime.fromisoformat(existing['dueDate'][:-1])
+            parsed_due_date = parsed_due_date.replace(tzinfo=datetime.timezone.utc)
+
+            if (event.end > parsed_due_date):
+                print(f"Updating task for event: {event.summary}")
+                motion.update_deadline(
+                    event=existing,
+                    due_date=event.end.isoformat()
+                )
+            else:
+                print(f"Skipping...")
+            continue
 
         if (event.end < datetime.datetime.now(datetime.timezone.utc)):
             continue

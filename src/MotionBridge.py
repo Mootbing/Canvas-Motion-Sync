@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from typing import Dict, Any, Optional
 import datetime
 
-class MotionHandler:
+class MotionBridge:
     """
     A class to handle interactions with the Motion API.
     """
@@ -14,7 +14,7 @@ class MotionHandler:
     BASE_URL = "https://api.usemotion.com/v1"
     
     def __init__(self):
-        """Initialize the MotionHandler with API credentials."""
+        """Initialize the MotionBridge with API credentials."""
         # Load environment variables from .env file
         dotenv_path = Path(__file__).parent.parent / '.env'
         load_dotenv(dotenv_path)
@@ -95,26 +95,42 @@ class MotionHandler:
             raise Exception(error_message)
         
     def get_tasks(self):
+        url = f"{self.BASE_URL}/tasks"
+
+        response = requests.get(url, headers=self.headers).json()
+
+        tasks = response['tasks']
+
+        filtered_tasks = []
+
+        for task in tasks:
+            if not task['completed']:
+                filtered_tasks.append(task)
+
+        return filtered_tasks
+    
+    def update_deadline(self):
         pass
 
-
-# Example usage:
 if __name__ == "__main__":
-    try:
-        # Create instance of MotionHandler
-        motion = MotionHandler()
+    # try:
+    #     # Create instance of MotionBridge
+    #     motion = MotionBridge()
         
-        # Example task creation
-        result = motion.create_task(
-            name="Test API Event",
-            workspace_id=motion.workspace_id,  # Use the workspace ID from environment variables
-            due_date="2025-03-20T10:00:00Z",
-            description="This is a description for the new event.",
-        )
+    #     # Example task creation
+    #     result = motion.create_task(
+    #         name="Test API Event",
+    #         workspace_id=motion.workspace_id,  # Use the workspace ID from environment variables
+    #         due_date="2025-03-20T10:00:00Z",
+    #         description="This is a description for the new event.",
+    #     )
         
-        print("Task created successfully:", result)
+    #     print("Task created successfully:", result)
         
-    except ValueError as ve:
-        print(f"Configuration Error: {ve}")
-    except Exception as e:
-        print(f"Error: {e}")
+    # except ValueError as ve:
+    #     print(f"Configuration Error: {ve}")
+    # except Exception as e:
+    #     print(f"Error: {e}")
+
+    motion = MotionBridge()
+    print(motion.get_tasks())
