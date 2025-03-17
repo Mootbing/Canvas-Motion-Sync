@@ -95,7 +95,7 @@ class MotionHandler:
             raise Exception(error_message)
         
     def get_tasks(self):
-        
+        pass
 
 
 # Example usage:
