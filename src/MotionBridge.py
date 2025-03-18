@@ -101,13 +101,13 @@ class MotionBridge:
 
         tasks = response['tasks']
 
-        filtered_tasks = []
+        # filtered_tasks = []
 
-        for task in tasks:
-            if not task['completed']:
-                filtered_tasks.append(task)
+        # for task in tasks:
+        #     if not task['completed']:
+        #         filtered_tasks.append(task)
 
-        return filtered_tasks
+        return tasks
     
     def update_deadline(self):
         pass

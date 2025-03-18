@@ -16,6 +16,10 @@ if (grabber.load_calendar()):
 
             existing = already_existing_events[[task['name'] for task in already_existing_events].index(event.summary)]
 
+            if (existing['completed']):
+                print(f"Task for event is already completed")
+                continue
+
             parsed_due_date = datetime.datetime.fromisoformat(existing['dueDate'][:-1])
             parsed_due_date = parsed_due_date.replace(tzinfo=datetime.timezone.utc)
 
@@ -29,7 +33,9 @@ if (grabber.load_calendar()):
                 print(f"Skipping...")
             continue
 
-        if (event.end < datetime.datetime.now(datetime.timezone.utc)):
+        yesterday = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
+
+        if (event.end < yesterday):
             continue
 
         print(f"Creating task for event: {event.summary}")
